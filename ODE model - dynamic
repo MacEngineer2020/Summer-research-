@@ -28,7 +28,7 @@ for u1= 0:10
     for u2= 0:10
         row_num1=1;
         row_num=1;
-        
+        counter=0;
          e1 = u1/(k1+u1);
             e2 = u2/(k2+u2);
             alpha1 = (A1*e1)/(1+(B1*e1)+(B2*e2));
@@ -63,7 +63,7 @@ for u1= 0:10
             alpha2 = (A2*e2)/(1+(B1*e1)+(B2*e2));
             % Parameters for solution
             f = @(t,x) [alpha1 - delta*x(1); alpha2 - delta*x(2)];
-            [tv,xv]=ode45(f,[u3-10 u3],[raw_x1((u2+1)*row,column_num1);raw_x2((u2+1)*row,column_num1)]);% solving the ode
+            [tv,xv]=ode45(f,[u3-10 u3],[raw_x1((counter+1)*row,column_num1);raw_x2((counter+1)*row,column_num1)]);% solving the ode
             counter=counter+1;
             %getting the dimenstions of the solution matrix so we can collate data
             [row,col]=size(xv);
