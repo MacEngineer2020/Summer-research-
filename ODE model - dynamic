@@ -24,7 +24,7 @@ g=[];
 interpolate_x1=[];
 interpolate_x2=[];
 % indexes for matrices
-i = 1;
+counter=0;
 row_num =1;
 column_num=1;
 column_num1=1;
@@ -33,8 +33,8 @@ row_num1=1;
 % running loop to generate dataset
 for u1= 0:10
     for u2= 0:10
-        
-        
+        raw_time=[];
+        % solving ode from 0 to 10 with loop value
         
         e1 = u1/(k1+u1);
         e2 = u2/(k2+u2);
@@ -47,7 +47,7 @@ for u1= 0:10
         row_num=1;
         
         for k=1:row
-        
+            
             raw_x1(row_num,column_num1)=xv(k,1);
             raw_x2(row_num,column_num1)=xv(k,2);
             raw_u1(row_num,column_num1)=u1;
@@ -56,7 +56,7 @@ for u1= 0:10
             row_num=row_num+1;
         end
         
-   
+        
         % sampling to be added
         row_num1=1;
         % resampling data below
@@ -70,17 +70,17 @@ for u1= 0:10
         
         
         
-        counter=1;
+        
+        % solving ODE from 10 to 1000 with random values of u1 and u2 every
+        % 10 timestamps
         for u3=10:10:990
-            
+           
             %counter=1;
             rng('shuffle');
-            a = 0;
+            a = 20;
             b = 100;
             u1_new = (b-a).*rand(1,1) + a;
             u2_new=(b-a).*rand(1,1) + a;
-            
-            
             
             e1 = u1_new/(k1+u1_new);
             e2 = u2_new/(k2+u2_new);
@@ -89,43 +89,38 @@ for u1= 0:10
             % Parameters for solution
             f = @(t,x) [alpha1 - delta*x(1); alpha2 - delta*x(2)];
             [tv,xv]=ode45(f,[u3+0.1 u3+10],[ raw_x1(row_num-1,column_num1); raw_x2(row_num-1,column_num1)]);% solving the ode
-            [row,col]=size(xv);
-            counter=counter+1;
+            [row1,col]=size(xv);
             
-            for k=1:row
-                raw_x1(row_num,column_num1)=xv(k,1);
-                raw_x2(row_num,column_num1)=xv(k,2);
+            
+            % storing solutions and timestamp for each run
+            for p=1:row1
+                raw_x1(row_num,column_num1)=xv(p,1);
+                raw_x2(row_num,column_num1)=xv(p,2);
                 raw_u1(row_num,column_num1)=u1_new;
                 raw_u2(row_num,column_num1)=u2_new;
-                raw_time(row_num,1)=tv(k,1);
+                raw_time(row_num,1)=tv(p,1);
                 row_num=row_num+1;
             end
-        end
-       
             
-            for cnt=5:step_size:1000
-              
-                x1(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
-                x2(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
-                arr_u1(row_num1,column_num)=interp1(raw_time(:,1),raw_u1(:,column_num1),cnt);
-                arr_u2(row_num1,column_num)=interp1(raw_time(:,1),raw_u2(:,column_num1),cnt);
-                row_num1=row_num1+1;
-            end
-            column_num=column_num+1;
+        end
         
-      
+        %resampling the data at every 10 intervals
+        for cnt=5:step_size:1000
+            % raw_time=unique(raw_time);
+            x1(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
+            x2(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
+            arr_u1(row_num1,column_num)=interp1(raw_time(:,1),raw_u1(:,column_num1),cnt);
+            arr_u2(row_num1,column_num)=interp1(raw_time(:,1),raw_u2(:,column_num1),cnt);
+            row_num1=row_num1+1;
+        end
+        column_num=column_num+1;
         
-    
-        % sampling to be added
-        % row_num1=1;
-        % resampling data below
-       
-         
-    column_num1=column_num1+1;
+        column_num1=column_num1+1;
+        
+        
     end
-    
 end
- 
+
 %hold off
 %Export data into excel file
 xlswrite("data_raw_u1", raw_u1)
