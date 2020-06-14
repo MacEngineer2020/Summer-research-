@@ -1,3 +1,4 @@
+
 close all
 clear all
 clc
@@ -7,11 +8,18 @@ A1 = 1; A2 = 3; B1 = 1;B2 = 1;
 G1 = 6; G2 = 1;
 delta = 0.1;
 % matrices to store data
-data = [];
+raw_u1 = [];
+raw_u2=[];
+interpolate_u1=[];
+interpolate_u2=[];
+arr_u1=[];
+arr_u2=[];
 x1=[];
 x2=[];
 raw_x1=[];
 raw_x2=[];
+raw_time=[];
+sampled_time=[];
 g=[];
 interpolate_x1=[];
 interpolate_x2=[];
@@ -20,41 +28,58 @@ i = 1;
 row_num =1;
 column_num=1;
 column_num1=1;
-step_size=5;
+step_size=10;
 row_num1=1;
-initial_value_index=0;
 % running loop to generate dataset
 for u1= 0:10
     for u2= 0:10
-        row_num1=1;
+        
+        
+        
+        e1 = u1/(k1+u1);
+        e2 = u2/(k2+u2);
+        alpha1 = (A1*e1)/(1+(B1*e1)+(B2*e2));
+        alpha2 = (A2*e2)/(1+(B1*e1)+(B2*e2));
+        % Parameters for solution
+        f = @(t,x) [alpha1 - delta*x(1); alpha2 - delta*x(2)];
+        [tv,xv]=ode45(f,[0 10],[0;0]);% solving the ode
+        [row,col]=size(xv);
         row_num=1;
-        counter=0;
-         e1 = u1/(k1+u1);
-            e2 = u2/(k2+u2);
-            alpha1 = (A1*e1)/(1+(B1*e1)+(B2*e2));
-            alpha2 = (A2*e2)/(1+(B1*e1)+(B2*e2));
-            % Parameters for solution
-            f = @(t,x) [alpha1 - delta*x(1); alpha2 - delta*x(2)];
-            [tv,xv]=ode45(f,[0 10],[0;0]);% solving the ode
+        
+        for k=1:row
+        
+            raw_x1(row_num,column_num1)=xv(k,1);
+            raw_x2(row_num,column_num1)=xv(k,2);
+            raw_u1(row_num,column_num1)=u1;
+            raw_u2(row_num,column_num1)=u2;
+            raw_time(row_num,1)=tv(k,1);
+            row_num=row_num+1;
+        end
+        
+   
+        % sampling to be added
+        row_num1=1;
+        % resampling data below
+        
+        %cnt=5
+        %   interpolate_x1(row_num1,1)=interp1(tv,xv(:,1),cnt);
+        %  interpolate_x2(row_num1,1)=interp1(tv,xv(:,2),cnt);
+        %  interpolate_u1(row_num1,1)=interp1(tv,raw_u1(:,column_num1),cnt)
+        %   interpolate_u2(row_num1,1)=interp1(tv,raw_u2(:,column_num1),cnt)
+        % row_num1=row_num1+1;
+        
+        
+        
+        counter=1;
+        for u3=10:10:990
             
-            %getting the dimenstions of the solution matrix so we can collate data
-            [row,col]=size(xv);
-            initial_value_index=row;
-            
-            
-            for k=1:row
-                raw_x1(row_num,column_num1)=xv(k,1);
-                raw_x2(row_num,column_num1)=xv(k,2);
-                row_num=row_num +1;
-                
-            end
-        for u3=10:10:1000
-            counter=0;
+            %counter=1;
             rng('shuffle');
             a = 0;
             b = 100;
             u1_new = (b-a).*rand(1,1) + a;
             u2_new=(b-a).*rand(1,1) + a;
+            
             
             
             e1 = u1_new/(k1+u1_new);
@@ -63,53 +88,52 @@ for u1= 0:10
             alpha2 = (A2*e2)/(1+(B1*e1)+(B2*e2));
             % Parameters for solution
             f = @(t,x) [alpha1 - delta*x(1); alpha2 - delta*x(2)];
-            [tv,xv]=ode45(f,[u3-10 u3],[raw_x1((counter+1)*row,column_num1);raw_x2((counter+1)*row,column_num1)]);% solving the ode
-            counter=counter+1;
-            %getting the dimenstions of the solution matrix so we can collate data
+            [tv,xv]=ode45(f,[u3+0.1 u3+10],[ raw_x1(row_num-1,column_num1); raw_x2(row_num-1,column_num1)]);% solving the ode
             [row,col]=size(xv);
-            initial_value_index=row;
-            
+            counter=counter+1;
             
             for k=1:row
                 raw_x1(row_num,column_num1)=xv(k,1);
                 raw_x2(row_num,column_num1)=xv(k,2);
-                row_num=row_num +1;
-                
+                raw_u1(row_num,column_num1)=u1_new;
+                raw_u2(row_num,column_num1)=u2_new;
+                raw_time(row_num,1)=tv(k,1);
+                row_num=row_num+1;
             end
+        end
+       
             
-            
-            
-            % column_num1=column_num1+1;
-            
-            row1=1000/step_size;
-            
-            % sampling to be added
-            %row_num1=1;
-            % resampling data below
-            for cnt=u3-10:step_size:u3
-                interpolate_x1(row_num1,1)=interp1(tv,xv(:,1),cnt);
-                interpolate_x2(row_num1,1)=interp1(tv,xv(:,2),cnt);
+            for cnt=5:step_size:1000
+              
+                x1(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
+                x2(row_num1,column_num)=interp1(raw_time(:,1),raw_x1(:,column_num1),cnt);
+                arr_u1(row_num1,column_num)=interp1(raw_time(:,1),raw_u1(:,column_num1),cnt);
+                arr_u2(row_num1,column_num)=interp1(raw_time(:,1),raw_u2(:,column_num1),cnt);
                 row_num1=row_num1+1;
             end
-            
-        end
-        column_num1=column_num1+1;
+            column_num=column_num+1;
         
-        % collating all data into a 3 matrices for x1,x2
-        for n=1:row1
-            x1(n,column_num)=interpolate_x1(n,1);
-            x2(n,column_num)=interpolate_x2(n,1);
-            %g(n,column_num)=(G1*xv(n,1)/(G2+xv(n,1)));
-        end
-        column_num=column_num+1;
-        % storing the corresponding u1 and u2 values in another matrix
-        data(i,:) = [u1, u2];
-        i = i+1;
+      
+        
+    
+        % sampling to be added
+        % row_num1=1;
+        % resampling data below
+       
+         
+    column_num1=column_num1+1;
     end
     
 end
+ 
 %hold off
 %Export data into excel file
+xlswrite("data_raw_u1", raw_u1)
+xlswrite("data_raw_u2", raw_u2)
+
+xlswrite("data_sampled_u1", arr_u1)
+xlswrite("data_sampled_u2", arr_u2)
+
 xlswrite("data_raw_x1", raw_x1)
 xlswrite("data_raw_x2", raw_x2)
 
