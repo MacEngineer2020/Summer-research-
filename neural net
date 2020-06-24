@@ -5,44 +5,67 @@ format long
 out = csvread('learning_data.csv');
  u= [out(:,1) out(:,2)]'; % input matrix
  xo = out(:,3)'; %output matrix
- new_out=xo;
- new_out(end)=[];
  time=out(:,4)';
- %net = newrb(u,xo,0,1,200,25);
+% net = newrbe(u,xo);
  [row_u,col_u]=size(u);
  [row_xo,col_xo]=size(xo);
 column_num=1;
  weighted_in =[];
  weighted_out=[];
  simulate=[];
- 
+ column_num1=1
  sim_ans=[];
  
-% num_of_elements=5;
-% loop_end_inner= num_of_elements-1;
-
- for i=1:col_u-1
-         weighted_in(1,column_num)=u(1,i);
-         weighted_in(2,column_num)=u(2,i);
-         weighted_out(1,column_num)=xo(1,i);
-         
-        net=newrb(weighted_in,weighted_out,0,1,200,25);
-         simulate(1,1)=u(1,column_num+1);
-         simulate(2,1)=u(2,column_num+1);
-         sim_ans(1,column_num) = sim(net,simulate);
-         column_num = column_num+1;
- end 
-     new_time=[]
-   [row_time,col_time]=size(time);
+ num_of_elements=4;
+ loop_end_inner= num_of_elements-1;
+ 
+ for i=1:col_u-num_of_elements-1;
      column_num=1;
-     for i=1:col_time-1
-        new_time(1,column_num)=time(1,i);
-        column_num=column_num+1;
+     for j=i:i+4
+         
+     weighted_in(1,column_num)=u(1,j);
+         weighted_in(2,column_num)=u(2,j);
+         weighted_out(1,column_num)=xo(1,j);
+         column_num=column_num+1;
      end
-     
+     net=newrbe(weighted_in,weighted_out);
+         simulate=[u(1,i+5);u(2,i+5)];
+         sim_ans(1,column_num1) = sim(net,simulate);
+         sim_ans(2,column_num1)=time(1,column_num1);
+         column_num1 = column_num1+1;
+ end
+%  for i=num_of_elements:col_u-1
+%          weighted_in(1,column_num)=u(1,i);
+%          weighted_in(2,column_num)=u(2,i);
+%          weighted_out(1,column_num)=xo(1,i);
+%          
+%         net=newrbe(weighted_in,weighted_out);
+%          simulate(1,1)=u(1,column_num+1);
+%          simulate(2,1)=u(2,column_num+1);
+%          sim_ans(1,column_num) = sim(net,simulate);
+%          column_num = column_num+1;
+%  end 
+
+%      new_time=[]
+%    [row_time,col_time]=size(time);
+%      column_num=1;
+%      for i=1:col_time-1
+%         new_time(1,column_num)=time(1,i);
+%         column_num=column_num+1;
+%      end
+     p=[40.8;26.8];
+     y= sim(net,p)
      figure
- plot(new_time,new_out,'r',new_time,sim_ans,'g')
+ plot( time,xo(1,:),'g')
+ figure
+ plot( sim_ans(2,:),sim_ans(1,:))
+ column_num1=1;
+ fin_sim_ans=[];
+ for i=1:col_u
+     p=[u(1,i);u(2,1)];
+     fin_sim_ans(1,column_num1)=sim(net,p);
+     column_num1=column_num1+1;
+ end 
  
-     
- 
- 
+ figure
+ plot(time,fin_sim_ans);
