@@ -1,0 +1,48 @@
+clc
+clear all
+close all
+format long
+out = csvread('learning_data.csv');
+ u= [out(:,1) out(:,2)]'; % input matrix
+ xo = out(:,3)'; %output matrix
+ new_out=xo;
+ new_out(end)=[];
+ time=out(:,4)';
+ %net = newrb(u,xo,0,1,200,25);
+ [row_u,col_u]=size(u);
+ [row_xo,col_xo]=size(xo);
+column_num=1;
+ weighted_in =[];
+ weighted_out=[];
+ simulate=[];
+ 
+ sim_ans=[];
+ 
+% num_of_elements=5;
+% loop_end_inner= num_of_elements-1;
+
+ for i=1:col_u-1
+         weighted_in(1,column_num)=u(1,i);
+         weighted_in(2,column_num)=u(2,i);
+         weighted_out(1,column_num)=xo(1,i);
+         
+        net=newrb(weighted_in,weighted_out,0,1,200,25);
+         simulate(1,1)=u(1,column_num+1);
+         simulate(2,1)=u(2,column_num+1);
+         sim_ans(1,column_num) = sim(net,simulate);
+         column_num = column_num+1;
+ end 
+     new_time=[]
+   [row_time,col_time]=size(time);
+     column_num=1;
+     for i=1:col_time-1
+        new_time(1,column_num)=time(1,i);
+        column_num=column_num+1;
+     end
+     
+     figure
+ plot(new_time,new_out,'r',new_time,sim_ans,'g')
+ 
+     
+ 
+ 
