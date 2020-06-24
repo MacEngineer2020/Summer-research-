@@ -1,0 +1,11 @@
+clc
+clear all
+close all
+format long
+out = csvread('singlerun1.csv');
+ u= [out(:,1) out(:,2)]'; % input matrix
+ xo = out(:,3)'; %output matrix
+ net = newrbe(u,xo);
+ u,xo %display matrices (not needed, just to visualize.)
+ p = [ 0;0]; %enter input to simulate after training network
+ Y = sim(net,p) %simulates and returns output
