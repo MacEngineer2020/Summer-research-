@@ -1,0 +1,25 @@
+clc
+clear all
+close all
+format long
+out = csvread('offline_learning_data.csv');
+ u= [out(:,1) out(:,2)]'; % input matrix
+ xo = out(:,3)'; %output matrix
+ net = newrbe(u,xo);
+  %display matrices (not needed, just to visualize.)
+  
+ figure
+ plot(out(:,5),out(:,3),'b')
+ legend("Actual data for x1");
+ sim_ans=[];
+ 
+ [row col]= size(out);
+ 
+ for i=1:row
+     p=[out(i,1);out(i,2)];
+     sim_ans(i,1)= sim(net,p);
+     
+ end
+ figure
+ plot(out(:,5), sim_ans(:,1))
+ legend(" simulation after learning for x1");
