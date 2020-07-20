@@ -12,7 +12,7 @@ net=0;
 [row_xo,col_xo]=size(xo);
 
 training=[];
-training=[u(1,1:col_u-100);u(1,1:col_u-100)];
+training=[u(1,1:col_u-100);u(2,1:col_u-100)];
 [row_training,col_training]=size(training);
 training_time=[time(1,1:col_u-100)];
 
@@ -53,7 +53,7 @@ for i=1:col_training-num_of_elements % outer loop
         column_num=column_num+1;
     end
     % feeding it into the rbe
-    net=newrb(weighted_in,weighted_out);
+    net=newrbe(weighted_in,weighted_out);
     
     % now we simulate the value of x1 in the timestep that is "next" and hasnt
     % been input into the net yet
@@ -74,9 +74,15 @@ for i=1:col_training-num_of_elements % outer loop
 end
 %simulating
 column_num1=1;
-for x=1:col_validation
-   
-    p=[validation(1,x);validation(2,x)];
+column_num=1;
+for x=1:col_validation-num_of_elements
+%     column_num=1;
+%    for y=x:x+num_of_elements-1
+%     p(1,column_num)= validation(1,y)
+%     p(2,column_num)= validation(2,y)
+%     column_num=column_num+1;
+%    end
+   p=[validation(1,x);validation(2,x)];
     sim_valid_ans(1,column_num1)=sim(net,p);
    
     if xo(1,x+col_training)==0
@@ -86,6 +92,7 @@ for x=1:col_validation
         error_valid(1,column_num1)=abs(sim_valid_ans(1,column_num1)-xo(1,x+col_training))/xo(1,x+col_training);
         column_num1 = column_num1+1;
     end
+    sim_valid_ans(2,column_num1)=validation_time(1,x);% storing the corresponding timestep
 end
 
 % plotting orignal data and simulated data
@@ -111,7 +118,6 @@ title('error graph training')
 xlabel('Time')
 
 figure 
-plot(validation_time,xo(1,col_training+1:col_u),'g',validation_time, sim_valid_ans(1,:));
+plot(validation_time,xo(1,col_training+1:col_u),'g',sim_valid_ans(2,:), sim_valid_ans(1,:));
 legend('actual data', ' simulated');
 title(' actual and simulated for validation set');
-```
