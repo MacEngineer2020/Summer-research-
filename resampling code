@@ -1,0 +1,40 @@
+clc
+clear all
+format long 
+out = csvread('Raw_data.csv');
+
+raw_x1=out(:,3);% matrix containing u1 and u2
+raw_x2=out(:,4);
+raw_u1=out(:,1);
+raw_u2=out(:,2);
+raw_time=out(:,5);
+row_num1=1;
+
+step_size=1;
+ %resampling the data at every 10 intervals
+  for cnt=1:step_size:1000% change this to last timestamp in raw data
+      
+   % interpolating the data and storing it in another 1D array 
+   interpolate_x1(row_num1,1)=interp1(raw_time(:,1),raw_x1(:,1),cnt);
+   interpolate_x2(row_num1,1)=interp1(raw_time(:,1),raw_x2(:,1),cnt);
+   interpolate_u1(row_num1,1)=interp1(raw_time(:,1),raw_u1(:,1),cnt);
+   interpolate_u2(row_num1,1)=interp1(raw_time(:,1),raw_u2(:,1),cnt);
+   sampled_time(row_num1,1)=cnt;
+   row_num1=row_num1+1;
+  end
+  row_num2=1;
+  for k=1:row_num1-1
+   % 
+   x1(row_num2,1)=interpolate_x1(k,1);
+   x2(row_num2,1)=interpolate_x2(k,1);
+   arr_u1(row_num2,1)=interpolate_u1(k,1);
+   arr_u2(row_num2,1)=interpolate_u2(k,1);
+   row_num2=row_num2+1;
+  end
+  
+  
+  xlswrite("data_sampled_u1", arr_u1)
+xlswrite("data_sampled_u2", arr_u2)
+xlswrite("data_sampled_x1", x1)
+xlswrite("data_sampled_x2", x2)
+xlswrite("time_sampled",sampled_time)
