@@ -24,7 +24,9 @@ interpolate_x2=[];
 row_num =1;
 column_num=1;
 column_num1=1;
-step_size=10;
+%%%%
+step_size=1;
+%%%%%
 row_num1=1;
 row_num2=1;
 sampled_time=[];
@@ -46,6 +48,9 @@ sampled_time=[];
   [tv,xv]=ode45(f,[0 10],[0;0]);% solving the ode
   [row,col]=size(xv);
   row_num=1;
+  %%%%
+  
+  %%%%%%
   for k=1:row
    % storing data for that particular run in an array
    raw_x1(row_num,1)=xv(k,1);
@@ -58,7 +63,7 @@ sampled_time=[];
   row_num1=1;% reset the row number to 1 
   % solving ODE from 10 to 1000 with random values of u1 and u2 every
   % 10 timestamps
-  for u3=10:10:4990
+  for u3=10:10:990
    %counter=1;
    rng('shuffle');
    a = 1;
@@ -78,15 +83,36 @@ sampled_time=[];
    % storing solutions and timestamp for each run in a 1D array 
    for p=1:row1
     raw_x1(row_num,1)=xv(p,1);
+    
+    
     raw_x2(row_num,1)=xv(p,2);
+    
+    
     raw_u1(row_num,1)=u1_new;
+    
+    
     raw_u2(row_num,1)=u2_new;
+    
+    
     raw_time(row_num,1)=tv(p,1);
+   
+    
     row_num=row_num+1;
    end
+   
   end
+  
+  xlswrite("raw_u1", raw_u1)
+  xlswrite("raw_u2", raw_u2)
+  xlswrite("raw_x1", raw_x1)
+  xlswrite("raw_x2", raw_x2)
+  xlswrite("raw_time1", raw_time)
+
+
+
+  
   %resampling the data at every 10 intervals
-  for cnt=1:step_size:5000
+  for cnt=1:step_size:1000
    % interpolating the data and storing it in another 1D array 
    interpolate_x1(row_num1,1)=interp1(raw_time(:,1),raw_x1(:,1),cnt);
    interpolate_x2(row_num1,1)=interp1(raw_time(:,1),raw_x2(:,1),cnt);
@@ -104,26 +130,26 @@ sampled_time=[];
    arr_u2(row_num2,column_num1)=interpolate_u2(k,1);
    row_num2=row_num2+1;
   end
-  column_num=column_num+1;
+  
   column_num1=column_num1+1;
- figure
-plot(sampled_time,x1(:,1),'r',sampled_time,x2(:,1),'g')
-grid on
-xlabel("Time")
-ylabel("Protein level")
-title("Proteins")
-legend("Protein 1", "Protein ")
-figure
-plot(raw_time,raw_x1(:,1),'r',raw_time,raw_x2(:,1),'g')
-grid on
-xlabel("Time")
-ylabel("Protein level")
-title("Proteins")
-legend ("raw Protein 1?, ?raw Protein 2")
-%hold off
-%Export data into excel file
-xlswrite("data_sampled_u1", arr_u1)
-xlswrite("data_sampled_u2", arr_u2)
-xlswrite("data_sampled_x1", x1)
-xlswrite("data_sampled_x2", x2)
-xlswrite("time_sampled",sampled_time)
+%  figure
+% plot(sampled_time,x1(:,1),'r',sampled_time,x2(:,1),'g')
+% grid on
+% xlabel("Time")
+% ylabel("Protein level")
+% title("Proteins")
+% legend("Protein 1", "Protein ")
+% figure
+% plot(raw_time,raw_x1(:,1),'r',raw_time,raw_x2(:,1),'g')
+% grid on
+% xlabel("Time")
+% ylabel("Protein level")
+% title("Proteins")
+% legend ("raw Protein 1?, ?raw Protein 2")
+% %hold off
+% %Export data into excel file
+% xlswrite("data_sampled_u1", arr_u1)
+% xlswrite("data_sampled_u2", arr_u2)
+% xlswrite("data_sampled_x1", x1)
+% xlswrite("data_sampled_x2", x2)
+% xlswrite("time_sampled",sampled_time)
