@@ -1,3 +1,6 @@
+% in this code we fix size of validation set, and change size of trianing
+% set to ge the mean error graph 
+
 clc
 clear all
 close all
@@ -9,16 +12,16 @@ time=out(:,4)'; % time stamps
 
 [row_u,col_u]=size(u); %getting size of dtatset
 [row_xo,col_xo]=size(xo);
+num_of_elements_in_validation=100;
+for n=4:col_u-num_of_elements_in_validation
 
-for n=996:-1:4
-
-num_of_elements_in_validation=n;% Setting size of validation set
-
+% Setting size of validation set
+num_of_elements_in_training=n;
 % creating training set
 training=[];
-training=[u(1,1:col_u-num_of_elements_in_validation);u(2,1:col_u-num_of_elements_in_validation);xo(1,1:col_u-num_of_elements_in_validation)];
+training=[u(1,1:num_of_elements_in_training);u(2,1:num_of_elements_in_training);xo(1,1:num_of_elements_in_training)];
 [row_training,col_training]=size(training);
-training_time=[time(1,1:col_u-num_of_elements_in_validation)];
+training_time=[time(1,1:num_of_elements_in_training)];
 
 % creating validation set
 validation=[];
@@ -137,7 +140,12 @@ end
 
 figure 
 plot(mean_error_validation(2,:), mean_error_validation(1,:))
-figure
-plot(validation_time,validation(3,:),'g',sim_ans_validation(2,:), sim_ans_validation(1,:));
-legend('actual data of  validation set', ' simulated data for validation set');
-title(' actual and simulated for validation set');
+legend('mean error for different sizes of training');
+title('Mean error for different sizes of training set');
+xlabel(' NUmber of samples in training');
+ylabel('Mean percentage error')
+
+% figure
+% plot(validation_time,validation(3,:),'g',sim_ans_validation(2,:), sim_ans_validation(1,:));
+% legend('actual data of  validation set', ' simulated data for validation set');
+% title(' actual and simulated for validation set');
