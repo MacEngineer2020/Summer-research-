@@ -12,10 +12,12 @@ time=out(:,4)'; % time stamps
 
 [row_u,col_u]=size(u); %getting size of dtatset
 [row_xo,col_xo]=size(xo);
-num_of_elements_in_validation=100;
+
 num_of_elements_in_training=300;
 num_of_elements=5;
 column_num1=1;
+
+error=[];
 for n=1:col_u-num_of_elements_in_training-1
 
 % Setting size of validation set
@@ -28,7 +30,7 @@ training_time=[time(1,n:n+num_of_elements_in_training)];
 
 row_num=1;
 past=[];
-for b=col_training:-1:col_training-num_of_elements+1
+for b=col_training-num_of_elements+1:col_training
     past(row_num,1)= training(1,b);
     row_num=row_num+1;
     past(row_num,1)= training(2,b);
@@ -139,10 +141,12 @@ net = fitnet(10);
 
 sim_ans(1,column_num1) = sim(net,past);% storing the simulated value
 sim_ans(2,column_num1)=time(1,col_training+n);% storing the corresponding timestep
+error(1,column_num1)=(abs(sim_ans(1,column_num1)-xo(1,col_training+n))/xo(1,col_training+n))*100
 column_num1=column_num1+1;
 
 end
 
+mean_error= mean(error,'all')
 % figure 
 % plot(mean_error_validation(2,:), mean_error_validation(1,:))
 % legend('mean error for different sizes of training');
