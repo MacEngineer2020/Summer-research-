@@ -1,8 +1,8 @@
 # Summer-research-
 Summer research June 2020- September 2020. This repository contains code for the model and machine learning for growth control.
 Different neural networks were used to arrive at the best perforning model. 
-The cellular behaviour was modeled as a ODE and a initial model was set up to randomly generate data. ALL work was done in MATLAB
-
+The cellular behaviour was modeled as a ODE and a initial model was set up to randomly generate data. ALL work was done in MATLAB.
+Visit https://netb.io/people.html for more info.
 We split the project into three steps, data, learning, and control. 
 1.	Data: We started off by generating data using an ordinary differential equation model with constant inputs using MATLAB. We then added time 
 varying inputs where our output was protein expression rate. 
