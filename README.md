@@ -16,3 +16,5 @@ generating a set of inputs to forecast the next desirable value of expression ra
 It would be more ideal to do it for multiple time steps in the future, however, the data grows exponentially so it was very difficult to do 
 so on our PCs since we had no access to labs. Next, once a desirable input is found, we commit it to our neural net and continue the process 
 until the output converges to the value we want.
+
+https://www.notion.so/ML-based-cell-control-c544b49f3e3a4a1a8ec12f054974a82d?pvs=4
